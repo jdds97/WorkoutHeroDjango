@@ -24,14 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-n2r(&78)7$4e_gr+-e(tg9$-n=ajhbc!taci8-*(w52_tj6@&!"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 AUTH_USER_MODEL = "usuarios.Usuario"
-
-ALLOWED_HOSTS = ["127.0.0.1","localhost","0.0.0.0:8000","sthenosfit-nginx","0.0.0.0"]
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+ALLOWED_HOSTS = ["127.0.0.1","localhost","0.0.0.0:8000","sthenosfit-nginx","0.0.0.0","ec2-18-211-237-181.compute-1.amazonaws.com"]
 SITE_ID = 1
 # Application definition
 
@@ -75,6 +73,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "SthenosFit.urls"
+
 CORS_ALLOWED_ORIGINS = [ALLOWED_HOSTS]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -101,7 +100,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "SthenosFit.wsgi.application"
 
 
 # Database
@@ -113,7 +111,7 @@ DATABASES = {
         'NAME': os.environ['DJANGO_DATABASE_NAME'],
         'USER': os.environ['DJANGO_DATABASE_USER'],
         'PASSWORD': os.environ['DJANGO_DATABASE_PASSWORD'],
-        'HOST': os.environ['DJANGO_DATABASE_HOST'],
+        'HOST':os.environ['DJANGO_DATABASE_HOST'],
         'PORT': os.environ['DJANGO_DATABASE_PORT'],
     }
 }
@@ -159,8 +157,8 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "core", "static"),
-    os.path.join(BASE_DIR, "clases", "static"),
+    os.path.join(BASE_DIR, "core", "static/core"),
+    os.path.join(BASE_DIR, "clases", "static/clases"),
 ]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

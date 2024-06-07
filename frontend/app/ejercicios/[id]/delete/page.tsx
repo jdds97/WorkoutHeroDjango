@@ -6,7 +6,7 @@ import {useStore} from '@/components/app/context';
 import EjercicioCard from '@/components/ejercicios/ejercicio-card';
 import FormButton from '@/components/ui/form-button';
 
-import {ejercicioDeleteAction} from '@/lib/actions';
+import {ejercicioDeleteAction} from '../../../../server/actions';
 
 export default function EjercicioDeletePage() {
     const {selectedEjercicio} = useStore();

@@ -1,6 +1,6 @@
 import {Suspense} from 'react';
 
-import {ejercicioCreateAction} from '@/lib/actions';
+import {ejercicioCreateAction} from '../../../server/actions';
 
 import SelectGruposMusculares from '@/components/app/select-grupo-muscular';
 import EjerciciosWger from '@/components/ejercicios/ejercicios-wger-list';

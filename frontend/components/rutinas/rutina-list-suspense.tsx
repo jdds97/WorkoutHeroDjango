@@ -1,7 +1,7 @@
 import {auth, UserSession} from 'auth';
 import {redirect} from 'next/navigation';
 import {Rutina} from '@/types/types';
-import {getRutinas} from '@/lib/api';
+import {getRutinas} from '../../server/api';
 import RutinaList from './rutinas-list';
 
 export default async function RutinaListSuspense({query = ''}: {query?: string | undefined}) {

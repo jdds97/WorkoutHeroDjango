@@ -1,34 +1,37 @@
 services:
   sthenosfit-nginx:
-    container_name: "${COMPOSE_PROJECT_NAME:-SthenosFit}_sthenosfit_nginx"
+    container_name: "${COMPOSE_PROJECT_NAME:-sthenosfit}_nginx"
     restart: "${DOCKER_RESTART_POLICY:-always}"
-    build:
-      context: docker/sthenosfit_nginx
+    build: docker/sthenosfit_nginx
     environment:
       VIRTUAL_HOST: "${STHENOS_FIT_HOSTNAMES:?}"
-      LETSENCRYPT_HOST: "${STHENOS_FIT_HOSTNAMES:?}"
+      # LETSENCRYPT_EMAIL: "${jesusdediossanchez@gmail.com:?}"
+      # LETSENCRYPT_HOST: "${https://workouthero.jesusdediossanchez.me:?}"
     expose:
       - "80"
+      - "443"
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
       - api_static:/srv/api/
     depends_on:
       - frontend
       - api
+      - webapp
     networks:
-      - default
-      - net_sthenosfit_frontend
-      - net_sthenosfit_backend
-      - net_sthenosfit_database
-      
+      - public
+
   frontend:
     hostname: frontend
+    image: ghcr.io/jdds97/proyecto-integrado-jdds97/frontend:latest
     container_name: "${COMPOSE_PROJECT_NAME:-SthenosFit}_frontend"
     restart: "${DOCKER_RESTART_POLICY:-always}"
     environment:
       TERM: xterm-256color
       NEXTAUTH_SECRET: "${NEXTAUTH_SECRET:?}"
       NEXTAUTH_URL: "${NEXTAUTH_URL:?}"
-      NEXTAUTH_API_BASE_URL: http://sthenosfit-nginx/
+      NEXTAUTH_API_BASE_URL: https://workouthero.jesusdediossanchez.me
       NEXT_PUBLIC_BACKEND_URL: "${NEXT_PUBLIC_BACKEND_URL:?}"
       GOOGLE_ID: "${NEXTAUTH_GOOGLE_ID:?}"
       GOOGLE_SECRET: "${NEXTAUTH_GOOGLE_SECRET:?}"
@@ -38,20 +41,23 @@ services:
       WGER_API_URL: "https://wger.de/api/v2/"
     expose:
       - "3000"
+    ports:
+      - "3000:3000"
     depends_on:
       - api
     networks:
-      - net_sthenosfit_frontend
+      - public
+
   api:
     hostname: api
-
+    image: ghcr.io/jdds97/proyecto-integrado-jdds97/api:latest
     container_name: "${COMPOSE_PROJECT_NAME:-sthenosfit-ng}_api"
     restart: "${DOCKER_RESTART_POLICY:-always}"
     environment:
       TERM: xterm-256color
-      DJANGO_SETTINGS_MODULE: "${STHENOS_FIT_DJANGO_SETTINGS_MODULE:-SthenosFit.settings}"
+      DJANGO_SETTINGS_MODULE: "SthenosFit.settings.api"
       DJANGO_LOG_LEVEL: "${DJANGO_LOG_LEVEL:-INFO}"
-      DJANGO_ALLOWED_HOSTS: "${STHENOS_FIT_HOSTNAMES:-localhost},sthenosfit-nginx"
+      DJANGO_ALLOWED_HOSTS: "${STHENOS_FIT_HOSTNAMES:-ec2-18-211-237-181.compute-1.amazonaws.com}"
       DJANGO_SECRET_KEY: "${STHENOS_FIT_DJANGO_SECRET_KEY:?}"
       DJANGO_DATABASE_NAME: "${STHENOS_FIT_POSTGRES_DB:-sthenosfit}"
       DJANGO_DATABASE_USER: "${STHENOS_FIT_POSTGRES_USER:-sthenosfit}"
@@ -63,36 +69,72 @@ services:
       PGUSER: "${STHENOS_FIT_POSTGRES_USER:-SthenosFit}"
     expose:
       - "8000"
+    ports:
+      - "8000:8000"
     volumes:
       - api_static:/srv/django
     depends_on:
       - sthenosfit-postgres
     networks:
-      - net_sthenosfit_frontend
-      - net_sthenosfit_backend
-      - net_sthenosfit_database
+      - public
 
+    command: uwsgi --socket 0.0.0.0:8000 --processes 4 --buffer-size 32768 --wsgi-file SthenosFit/settings/wsgi_api.py
 
-  sthenosfit-postgres:
-    image: "postgres:${STHENOS_FIT_POSTGRES_VERSION:?}"
-    container_name: "${COMPOSE_PROJECT_NAME:-sthenosfit-ng}_sthenosfit_postgres"
+  webapp:
+    hostname: webapp
+    image: ghcr.io/jdds97/proyecto-integrado-jdds97/api:latest
+    container_name: "${COMPOSE_PROJECT_NAME:-sthenosfit-ng}_webapp"
     restart: "${DOCKER_RESTART_POLICY:-always}"
     environment:
-      POSTGRES_DB: "${STHENOS_FIT_POSTGRES_DB:-sthenosfit}"
-      POSTGRES_USER: "${STHENOS_FIT_POSTGRES_USER:-sthenosfit}"
-      POSTGRES_PASSWORD: "${STHENOS_FIT_POSTGRES_PASSWORD:?}"
+      TERM: xterm-256color
+      DJANGO_SETTINGS_MODULE: "SthenosFit.settings.webapp"
+      DJANGO_LOG_LEVEL: "${DJANGO_LOG_LEVEL:-INFO}"
+      DJANGO_ALLOWED_HOSTS: "${STHENOS_FIT_HOSTNAMES:-ec2-18-211-237-181.compute-1.amazonaws.com},sthenosfit-nginx"
+      DJANGO_SECRET_KEY: "${STHENOS_FIT_DJANGO_SECRET_KEY:?}"
+      DJANGO_DATABASE_NAME: "${STHENOS_FIT_POSTGRES_DB:-sthenosfit}"
+      DJANGO_DATABASE_USER: "${STHENOS_FIT_POSTGRES_USER:-sthenosfit}"
+      DJANGO_DATABASE_PASSWORD: "${STHENOS_FIT_POSTGRES_PASSWORD:?}"
+      DJANGO_DATABASE_HOST: SthenosFit-postgres
+      DJANGO_DATABASE_PORT: "5432"
+      SIMPLEJWT_SECRET_KEY: "${SIMPLEJWT_SECRET_KEY:?}"
+      PGHOST: SthenosFit-postgres
+      PGUSER: "${STHENOS_FIT_POSTGRES_USER:-SthenosFit}"
     expose:
-      - "5432"
-    volumes:
-      - sthenosfit_postgres:/var/lib/postgresql/data
-      - ./docker/postgres/initdb.d:/docker-entrypoint-initdb.d
-    networks:
-      - net_sthenosfit_database  
-volumes:
-  api_static:
-  sthenosfit_postgres:
-
-networks:
-  net_sthenosfit_backend:
-  net_sthenosfit_database:
-  net_sthenosfit_frontend:
+      - "5000" 
+    ports: 
+      - "5000:5000" 
+    volumes: 
+      - webapp_static:/srv/django 
+    depends_on: 
+      - sthenosfit-postgres 
+    networks: 
+      - public 
+ 
+ 
+    command: uwsgi --socket 0.0.0.0:5000 --processes 4 --buffer-size 32768 --wsgi-file SthenosFit/settings/wsgi.py 
+ 
+  sthenosfit-postgres: 
+    image: "postgres:${STHENOS_FIT_POSTGRES_VERSION:?}" 
+    container_name: "${COMPOSE_PROJECT_NAME:-sthenosfit-ng}_sthenosfit_postgres" 
+    restart: "${DOCKER_RESTART_POLICY:-always}" 
+    environment: 
+      POSTGRES_DB: "${STHENOS_FIT_POSTGRES_DB:-sthenosfit}" 
+      POSTGRES_USER: "${STHENOS_FIT_POSTGRES_USER:-sthenosfit}" 
+      POSTGRES_PASSWORD: "${STHENOS_FIT_POSTGRES_PASSWORD:?}" 
+    expose: 
+      - "5432" 
+    volumes: 
+      - sthenosfit_postgres:/var/lib/postgresql/data 
+      - ./docker/postgres/initdb.d:/docker-entrypoint-initdb.d 
+    networks: 
+      - public 
+ 
+volumes: 
+  api_static: 
+  webapp_static: 
+  sthenosfit_postgres: 
+ 
+networks: 
+  public: 
+    name: nginx-proxy 
+    external: true

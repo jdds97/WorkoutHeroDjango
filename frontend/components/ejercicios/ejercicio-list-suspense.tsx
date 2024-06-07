@@ -2,7 +2,7 @@ import {UserSession, auth} from 'auth';
 
 import {redirect} from 'next/navigation';
 
-import {getEjercicios} from '@/lib/api';
+import {getEjercicios} from '../../server/api';
 
 import {Ejercicio} from '@/types/types';
 

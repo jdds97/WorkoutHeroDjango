@@ -11,8 +11,8 @@ import {
 
 import EjerciciosForm from './ejercicio-form';
 
-import {getTermino} from '@/lib/actions';
-import {getEjerciciosWger} from '@/lib/api';
+import {getTermino} from '../../server/actions';
+import {getEjerciciosWger} from '../../server/api';
 
 import {Ejercicio} from '@/types/types';
 

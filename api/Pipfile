@@ -105,4 +105,4 @@ flake8 = "*"
 types-jsonschema = "*"
 
 [requires]
-python_version = "3"
+python_version = "3.12"

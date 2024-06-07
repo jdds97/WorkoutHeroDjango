@@ -41,7 +41,7 @@ class ClienteRegistroForm(UserCreationForm):
         """
 
         model = Cliente
-        fields = ("username", "email", "rutina_asignada", "clases_apuntadas")
+        fields = ("username", "email", "clases_apuntadas")
 
 
 class EditarClienteForm(forms.ModelForm):
@@ -63,7 +63,6 @@ class EditarClienteForm(forms.ModelForm):
             "email",
             "imagen",
             "fecha_nacimiento",
-            "rutina_asignada",
             "clases_apuntadas",
             "membresia",
         )
@@ -73,7 +72,6 @@ class EditarClienteForm(forms.ModelForm):
             "email": forms.EmailInput(attrs={"class": "form-control"}),
             "imagen": forms.FileInput(attrs={"class": "form-control"}),
             "fecha_nacimiento": forms.DateInput(attrs={"class": "form-control"}),
-            "rutina_asignada": forms.Select(attrs={"class": "form-control"}),
             "clases_apuntadas": forms.SelectMultiple(attrs={"class": "form-control"}),
             "membresia": forms.Select(attrs={"class": "form-control"}),
         }

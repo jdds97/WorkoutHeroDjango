@@ -48,25 +48,8 @@ EOF
 
 
 EXPOSE 8000
+EXPOSE 5000
 
-### TEST RUNNER IMAGE ###
-
-FROM base AS test-runner
-# Populate home directory for development.
-COPY --chown=sthenos_fit:sthenos_fit docker/dev-home/ /home/sthenos_fit/
-
-# Install development packages.
-WORKDIR /root
-RUN pipenv install --site-packages --deploy --dev
-
-WORKDIR /app
-COPY --chown=sthenos_fit:sthenos_fit . .
-
-USER sthenos_fit
-
-CMD ["/bin/bash"]
-
-### API PRODUCTION IMAGE ###
 
 FROM base AS runner
 

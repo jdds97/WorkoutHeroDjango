@@ -5,7 +5,7 @@ import {useStore} from '@/components/app/context';
 import EjercicioCard from '@/components/ejercicios/ejercicio-card';
 import EjercicioForm from '@/components/ejercicios/ejercicio-form';
 
-import {ejercicioEditAction} from '@/lib/actions';
+import {ejercicioEditAction} from '../../../../server/actions';
 
 import {Ejercicio} from '@/types/types';
 

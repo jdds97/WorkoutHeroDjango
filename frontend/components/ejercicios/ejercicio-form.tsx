@@ -7,12 +7,12 @@ import {Input} from '@nextui-org/input';
 import FormButton from '@/components/ui/form-button';
 import {useStore} from '@/components/app/context';
 
-import {getEjercicioTraducido} from '@/lib/api';
+import {getEjercicioTraducido} from '../../server/api';
 import {Ejercicio} from '@/types/types';
 
 export default function EjerciciosForm({handleAction, ejercicio, message}: {ejercicio: any, handleAction?: (formData?: FormData, ejercicio?: Ejercicio) => void, message: string}) {
     const ref = useRef<HTMLFormElement | null>(null);
-    const {setEjercicios} = useStore();
+    const {ejercicios, setEjercicios} = useStore();
 
     const handleSubmit = async() => {
         const formData = new FormData(ref.current!);
@@ -23,7 +23,7 @@ export default function EjerciciosForm({handleAction, ejercicio, message}: {ejer
         }
         const ejercicioSeleccionado :any = await getEjercicioTraducido(ejercicio.data.base_id);
         const ejercicioEspañol : any = ejercicioSeleccionado.exercises.find((ej:any) => ej.language === 4);
-        const nuevoEjercicio= {
+        const nuevoEjercicio :Ejercicio = {
             id: null,
             nombre: ejercicioEspañol?.name,
             descripcion: ejercicioEspañol?.description,
@@ -39,7 +39,7 @@ export default function EjerciciosForm({handleAction, ejercicio, message}: {ejer
 
         handleAction?.(formData, nuevoEjercicio);
 
-        setEjercicios((prevEjercicios: Ejercicio[]) => [...prevEjercicios, nuevoEjercicio]);
+        setEjercicios([...ejercicios ?? [], nuevoEjercicio] as Ejercicio[]);
         ref.current?.reset();
     };
 

@@ -1,5 +1,5 @@
 
-import {signInAction} from '@/lib/actions';
+import {signInAction} from '../../server/actions';
 import {Button} from '@/components/ui/button';
 
 export function SignIn({

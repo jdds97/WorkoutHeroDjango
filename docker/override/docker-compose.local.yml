@@ -9,10 +9,14 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
-      target: runner
+      target: test-runner
+    command: /app/docker/dummy-server.sh
     ports:
       - 3000:3000
-      
+    volumes:
+      - ./frontend:/app
+    # Start as root and with the CAP_SYS_ADMIN capability to bind-mount the
+    # node_modules directory in the container over those mounted from the host.
     user: root
     cap_add: [SYS_ADMIN]
     security_opt:
@@ -23,7 +27,9 @@ services:
     build:
       context: api
       dockerfile: Dockerfile
-      target: runner
+      target: test-runner
+    command: /app/docker/dummy-server.sh
     ports:
       - 8000:8000
-
+    volumes:
+      - ./api:/app

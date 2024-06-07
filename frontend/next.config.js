@@ -4,7 +4,7 @@ const config = {
     experimental: {
         serverActions: {
             allowedOrigins: [
-                'localhost:8080',
+                '*',
             ],
         },
     },

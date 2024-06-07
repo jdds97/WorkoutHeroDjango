@@ -140,4 +140,3 @@ certs/
 # bbdd
 db.sqlite3
 migrations/
-package-lock.json

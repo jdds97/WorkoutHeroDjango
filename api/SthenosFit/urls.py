@@ -18,8 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
-from django.views.generic.base import RedirectView
-from SthenosFit import settings
+from SthenosFit.settings import base
 
 
 urlpatterns = [
@@ -31,4 +30,4 @@ urlpatterns = [
     path("clases/", include("clases.urls", namespace="clases")),
     path("usuarios/", include("usuarios.urls", namespace="usuarios")),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(base.MEDIA_URL, document_root=base.MEDIA_ROOT)

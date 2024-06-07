@@ -5,7 +5,7 @@ import {useStore} from '@/components/app/context';
 import RutinaCard from '@/components/rutinas/rutina-card';
 import FormButton from '@/components/ui/form-button';
 
-import {rutinaDeleteAction} from '@/lib/actions';
+import {rutinaDeleteAction} from '../../../../server/actions';
 
 export default function RutinaDeletePage() {
     const {selectedRutina} = useStore();

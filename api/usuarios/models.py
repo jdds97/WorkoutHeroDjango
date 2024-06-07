@@ -5,8 +5,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.dispatch import receiver
-from workout_hero.models import Rutina
-from clases.models import Clase
+from django.apps import apps
 
 # pylint: disable=no-member
 class Usuario(AbstractUser):
@@ -16,7 +15,7 @@ class Usuario(AbstractUser):
 
     imagen = models.ImageField(upload_to="usuarios", blank=True, null=True)
     clases_asignadas = models.ManyToManyField(
-        Clase, related_name="clases_asignadas", blank=True
+        "clases.Clase", related_name="clases_asignadas", blank=True
     )
     groups = models.ManyToManyField(
         Group,
@@ -58,9 +57,6 @@ class Cliente(Usuario):
     """
     usuario_ptr = models.OneToOneField(
         Usuario, on_delete=models.CASCADE, parent_link=True, default=None
-    )
-    rutina_asignada = models.ForeignKey(
-        Rutina, on_delete=models.SET_NULL, null=True, blank=True
     )
     clases_apuntadas = models.ManyToManyField(
         "clases.Clase", related_name="clientes", blank=True

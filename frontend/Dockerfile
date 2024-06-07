@@ -37,27 +37,9 @@ USER node
 WORKDIR /app
 
 COPY --from=deps --chown=node:node /app/node_modules ./node_modules
-COPY . .
+COPY --chown=node:node . .
 
 RUN make
-
-### TEST RUNNER IMAGE ###
-
-FROM base AS test-runner
-
-RUN mkdir /app && chown -R node:node /app
-
-WORKDIR /app
-
-USER node
-
-ENV PATH="$PATH:/home/node/.local/bin:/app/node_modules/.bin"
-
-COPY --from=deps --chown=node:node /app/node_modules ./node_modules
-COPY --chown=node:node docker/dev-home/ /home/node/
-COPY . .
-
-CMD ["/bin/bash"]
 
 ### PRODUCTION IMAGE ###
 
@@ -68,13 +50,14 @@ USER node
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 
-COPY . .
+COPY --chown=node:node . .
 
 EXPOSE 3000
 

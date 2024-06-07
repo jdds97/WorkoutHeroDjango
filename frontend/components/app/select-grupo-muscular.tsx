@@ -2,7 +2,7 @@
 
 import {Select, SelectItem} from '@nextui-org/select';
 
-import {setTermino} from '@/lib/actions';
+import {setTermino} from '../../server/actions';
 
 import {useRouter} from 'next/navigation';
 

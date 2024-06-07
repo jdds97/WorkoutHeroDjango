@@ -18,7 +18,7 @@
     "paths": {
       "@/*": [ "./app/*" ],
       "@/components/*": [ "./components/*" ],
-      "@/lib/*": [ "./lib/*" ],
+      "@/lib/*": [ "./server/*" ],
       "@/types/*": [ "./types/*" ],
       "@/styles/*": [ "./styles/*" ],
       "@/public/*": [ "./public/*" ],
@@ -40,7 +40,7 @@
   ],
   "include": [
     "tailwind.config.js",
-    "postcss.config.js",
+    "postcss.config.cjs",
     "eslintrc.json",
     "next.config.js",
     "next-env.d.ts",

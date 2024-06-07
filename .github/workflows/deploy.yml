@@ -1,46 +1,90 @@
-name: Deploy to AWS EC2
+  name: Desplegar en AWS EC2
 
-on:
-  push:
-    branches:
-      - main
+  on:
+    push:
+      branches:
+        - main
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  jobs:
+    construir-imagenes:
+      runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      steps:
+        - name: Clonar código
+          uses: actions/checkout@v2
+    
+        - name: Configurar Docker Buildx
+          uses: docker/setup-buildx-action@v1
+          with:
+            install: true
+    
+        - name: Iniciar sesión en el Registro de Contenedores de GitHub
+          run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        
+        - name: Construir y subir imagen del frontend
+          run: |
+            docker build --target runner -t ghcr.io/jdds97/proyecto-integrado-jdds97/frontend:latest -f ./frontend/Dockerfile ./frontend/ --push
+        
+        - name: Construir y subir imagen de la API
+          run: |
+            docker build --target runner -t ghcr.io/jdds97/proyecto-integrado-jdds97/api:latest -f ./api/Dockerfile ./api/ --push
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+    desplegar-en-ec2:
+        runs-on: ubuntu-latest
+        needs: construir-imagenes
+        
+        steps:
+        - name: Clonar código
+          uses: actions/checkout@v2
+        
+        - name: Crear archivo PEM
+          run: |
+              echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > linux.pem
+              echo "${{ secrets.SSL_RSA}}" | base64 --decode > docker/sthenosfit_nginx/nginx.pem
+              echo "${{ secrets.SSL_CRT}}" | base64 --decode > docker/sthenosfit_nginx/nginx.crt
+              chmod 600 linux.pem
+              chmod 600 docker/sthenosfit_nginx/nginx.pem
+              chmod 600 docker/sthenosfit_nginx/nginx.crt
 
-    - name: Log in to GitHub Container Registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        - name : Copiar proyecto a EC2
+          run: |
+            ssh -i "linux.pem" -o StrictHostKeyChecking=no ec2-user@ec2-18-211-237-181.compute-1.amazonaws.com 'sudo rm -rf *'
+            scp -i "linux.pem" -o StrictHostKeyChecking=no -r * ec2-user@ec2-18-211-237-181.compute-1.amazonaws.com:~
 
-    - name: Build and push frontend image
-      run: |
-        docker build -t ghcr.io/tu-usuario/frontend:latest -f Dockerfile.frontend .
-        docker push ghcr.io/tu-usuario/frontend:latest
-
-    - name: Build and push api image
-      run: |
-        docker build -t ghcr.io/tu-usuario/api:latest -f Dockerfile.api .
-        docker push ghcr.io/tu-usuario/api:latest
-
-    - name: Deploy to AWS EC2
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-        echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
-        scp -o StrictHostKeyChecking=no docker-compose.yml ec2-user@your-ec2-instance:/home/ec2-user/
-        ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-instance << 'EOF'
-          docker-compose pull
-          docker-compose up -d
-          docker-compose exec -T api make migrate static
-          docker-compose restart
-        EOF
+        - name: Desplegar en AWS EC2
+          run: |
+            ssh -v -i "linux.pem" -o StrictHostKeyChecking=no ec2-user@ec2-18-211-237-181.compute-1.amazonaws.com << 'EOF'
+            echo 'export NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}' >> ~/.bashrc
+            echo 'export NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}'  >> ~/.bashrc
+            echo 'export NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}'  >> ~/.bashrc
+            echo 'export NEXTAUTH_GOOGLE_ID=${{ secrets.NEXTAUTH_GOOGLE_ID }}'  >> ~/.bashrc
+            echo 'export NEXTAUTH_GOOGLE_SECRET=${{ secrets.NEXTAUTH_GOOGLE_SECRET }}'  >> ~/.bashrc
+            echo 'export NEXTAUTH_FACEBOOK_ID=${{ secrets.NEXTAUTH_FACEBOOK_ID }}'  >> ~/.bashrc
+            echo 'export NEXTAUTH_FACEBOOK_SECRET=${{ secrets.NEXTAUTH_FACEBOOK_SECRET }}'  >> ~/.bashrc
+            echo 'export SIMPLEJWT_SECRET_KEY=${{ secrets.SIMPLEJWT_SECRET_KEY }}'  >> ~/.bashrc
+            echo 'export TOKEN_WGER=${{ secrets.TOKEN_WGER }}'  >> ~/.bashrc
+            echo 'export WGER_API_URL=${{ secrets.WGER_API_URL }}'  >> ~/.bashrc
+            echo 'export COMPOSE_PROJECT_NAME=${{ secrets.COMPOSE_PROJECT_NAME }}'  >> ~/.bashrc
+            echo 'export DOCKER_RESTART_POLICY=${{ secrets.DOCKER_RESTART_POLICY }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_HOSTNAMES=${{ secrets.STHENOS_FIT_HOSTNAMES }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_FRONTEND_VERSION=${{ secrets.STHENOS_FIT_FRONTEND_VERSION }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_DJANGO_SECRET_KEY=${{ secrets.STHENOS_FIT_DJANGO_SECRET_KEY }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_API_VERSION=${{ secrets.STHENOS_FIT_API_VERSION }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_DJANGO_SETTINGS_MODULE=${{ secrets.STHENOS_FIT_DJANGO_SETTINGS_MODULE }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_POSTGRES_VERSION=${{ secrets.STHENOS_FIT_POSTGRES_VERSION }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_POSTGRES_DB=${{ secrets.STHENOS_FIT_POSTGRES_DB }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_POSTGRES_USER=${{ secrets.STHENOS_FIT_POSTGRES_USER }}'  >> ~/.bashrc
+            echo 'export STHENOS_FIT_POSTGRES_PASSWORD=${{ secrets.STHENOS_FIT_POSTGRES_PASSWORD }}'  >> ~/.bashrc
+            source ~/.bashrc
+            docker login ghcr.io -u jdds97 -p ${{ secrets.GITHUB_TOKEN }}
+            docker ps -q | if [ $(wc -l) -gt 0 ]; then docker stop $(docker ps -q); fi
+            docker ps -aq | if [ $(wc -l) -gt 0 ]; then docker rm $(docker ps -aq); fi
+            docker network ls | if [ $(wc -l) -gt 0 ]; then docker network rm $(docker network ls -q); fi
+            docker network create nginx-proxy
+            docker images -q | if [ $(wc -l) -gt 0 ]; then docker rmi $(docker images -q); fi
+            docker-compose build --pull
+            docker-compose pull
+            docker-compose up -d
+            docker-compose exec -T api make migrate static
+            docker-compose restart
+            EOF

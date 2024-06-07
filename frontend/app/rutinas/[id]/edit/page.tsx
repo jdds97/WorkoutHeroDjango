@@ -2,7 +2,7 @@
 
 import {redirect} from 'next/navigation';
 
-import {rutinaEditAction} from '@/lib/actions';
+import {rutinaEditAction} from '../../../../server/actions';
 
 import {useStore} from '@/components/app/context';
 import RutinaCard from '@/components/rutinas/rutina-card';

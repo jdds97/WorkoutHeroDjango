@@ -1,5 +1,5 @@
 import {Suspense} from 'react';
-import {rutinaCreateAction} from '@/lib/actions';
+import {rutinaCreateAction} from '../../../server/actions';
 
 import SelectGruposMusculares from '@/components/app/select-grupo-muscular';
 import EjerciciosWger from '@/components/ejercicios/ejercicios-wger-list';
