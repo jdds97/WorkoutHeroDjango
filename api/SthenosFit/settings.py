@@ -31,7 +31,7 @@ SECRET_KEY = "django-insecure-n2r(&78)7$4e_gr+-e(tg9$-n=ajhbc!taci8-*(w52_tj6@&!
 DEBUG = True
 AUTH_USER_MODEL = "usuarios.Usuario"
 
-ALLOWED_HOSTS = ["127.0.0.1","localhost","0.0.0.0:8000","sthenosfit-nginx","0.0.0.0"]
+ALLOWED_HOSTS = ["127.0.0.1","localhost","0.0.0.0:8000","sthenosfit-nginx","0.0.0.0",os.getenv('EC2_PUBLIC_DNS')]
 SITE_ID = 1
 # Application definition
 
@@ -113,7 +113,7 @@ DATABASES = {
         'NAME': os.environ['DJANGO_DATABASE_NAME'],
         'USER': os.environ['DJANGO_DATABASE_USER'],
         'PASSWORD': os.environ['DJANGO_DATABASE_PASSWORD'],
-        'HOST': os.environ['DJANGO_DATABASE_HOST'],
+        'HOST': os.getenv('EC2_PRIVATE_IP'),
         'PORT': os.environ['DJANGO_DATABASE_PORT'],
     }
 }

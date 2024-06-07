@@ -33,12 +33,40 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+        NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        DJANGO_DATABASE_PASSWORD: ${{ secrets.DJANGO_DATABASE_PASSWORD }}
+        EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+        EC2_PUBLIC_IP: ${{ secrets.EC2_PUBLIC_IP }}
+        EC2_PRIVATE_IP: ${{ secrets.EC2_PRIVATE_IP }}
+        EC2_PUBLIC_DNS: ${{ secrets.EC2_PUBLIC_DNS }}
+        EC2_PRIVATE_DNS: ${{ secrets.EC2_PRIVATE_DNS }}
+        EC2_INSTANCE_TYPE: ${{ secrets.EC2_INSTANCE_TYPE }}
+        EC2_VPC_ID: ${{ secrets.EC2_VPC_ID }}
+        EC2_SUBNET_ID: ${{ secrets.EC2_SUBNET_ID }}
+        EC2_INSTANCE_ARN: ${{ secrets.EC2_INSTANCE_ARN }}
       run: |
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
         echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
         scp -o StrictHostKeyChecking=no docker-compose.yml ec2-user@your-ec2-instance:/home/ec2-user/
         ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-instance << 'EOF'
+          export NEXTAUTH_SECRET=$NEXTAUTH_SECRET
+          export NEXTAUTH_URL=$NEXTAUTH_URL
+          export NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+          export DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
+          export DJANGO_DATABASE_PASSWORD=$DJANGO_DATABASE_PASSWORD
+          export EC2_INSTANCE_ID=$EC2_INSTANCE_ID
+          export EC2_PUBLIC_IP=$EC2_PUBLIC_IP
+          export EC2_PRIVATE_IP=$EC2_PRIVATE_IP
+          export EC2_PUBLIC_DNS=$EC2_PUBLIC_DNS
+          export EC2_PRIVATE_DNS=$EC2_PRIVATE_DNS
+          export EC2_INSTANCE_TYPE=$EC2_INSTANCE_TYPE
+          export EC2_VPC_ID=$EC2_VPC_ID
+          export EC2_SUBNET_ID=$EC2_SUBNET_ID
+          export EC2_INSTANCE_ARN=$EC2_INSTANCE_ARN
           docker-compose pull
           docker-compose up -d
           docker-compose exec -T api make migrate static

@@ -28,7 +28,7 @@ services:
       TERM: xterm-256color
       NEXTAUTH_SECRET: "${NEXTAUTH_SECRET:?}"
       NEXTAUTH_URL: "${NEXTAUTH_URL:?}"
-      NEXTAUTH_API_BASE_URL: http://sthenosfit-nginx/
+      NEXTAUTH_API_BASE_URL: http://ec2-54-196-115-14.compute-1.amazonaws.com/
       NEXT_PUBLIC_BACKEND_URL: "${NEXT_PUBLIC_BACKEND_URL:?}"
       GOOGLE_ID: "${NEXTAUTH_GOOGLE_ID:?}"
       GOOGLE_SECRET: "${NEXTAUTH_GOOGLE_SECRET:?}"
