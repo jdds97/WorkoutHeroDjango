@@ -1,0 +1,28 @@
+meta {
+  name: Token Refresh
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{BaseUrl}}/auth/token/refresh/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refresh": "{{RefreshToken}}"
+  }
+}
+
+vars:post-response {
+  AccessToken: res.body.access
+  RefreshToken: res.body.refresh
+}
+
+assert {
+  AccessToken: isDefined
+  RefreshToken: isDefined
+  res.status: eq 200
+}

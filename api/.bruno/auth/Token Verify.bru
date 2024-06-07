@@ -1,0 +1,22 @@
+meta {
+  name: Token Verify
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{BaseUrl}}/auth/token/verify/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "token": "{{AccessToken}}"
+  }
+}
+
+assert {
+  AccessToken: isDefined
+  res.status: eq 200
+}

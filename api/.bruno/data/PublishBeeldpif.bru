@@ -1,0 +1,27 @@
+meta {
+  name: PublishBeeldpif
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BaseUrl}}/organisations/{{OrganisationID}}/documents/{{DocumentID}}/maps/{{MapID}}/publish/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{AccessToken}}
+}
+
+body:json {
+  {
+    "formats": ["pdf", "html"],
+    "access_code": "abc125"
+  }
+}
+
+assert {
+  AccessToken: isDefined
+  res.status: eq 200
+}

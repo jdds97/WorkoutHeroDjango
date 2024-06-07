@@ -1,0 +1,20 @@
+meta {
+  name: User
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{BaseUrl}}/organisations/{{OrganisationID}}/users/{{UserID}}/
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{AccessToken}}
+}
+
+assert {
+  AccessToken: isDefined
+  res.status: eq 200
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Login
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BaseUrl}}/auth/login/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "joyce",
+    "password": "secret"
+  }
+}
+
+vars:post-response {
+  AccessToken: res.body.access
+  RefreshToken: res.body.refresh
+}
+
+assert {
+  res.status: eq 200
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Topics
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{BaseUrl}}/organisations/{{OrganisationID}}/topics/
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{AccessToken}}
+}
+
+assert {
+  AccessToken: isDefined
+  res.status: eq 200
+}

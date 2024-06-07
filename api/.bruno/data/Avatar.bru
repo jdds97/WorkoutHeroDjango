@@ -1,0 +1,15 @@
+meta {
+  name: Avatar
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{BaseUrl}}/avatar/render_primary/{{UserID}}/200/200/
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}

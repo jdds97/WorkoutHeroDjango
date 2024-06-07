@@ -1,0 +1,29 @@
+---
+
+services:
+  sthenosfit-nginx:
+    ports:
+      - 8080:80
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      target: runner
+    ports:
+      - 3000:3000
+      
+    user: root
+    cap_add: [SYS_ADMIN]
+    security_opt:
+      # Required to enable mounts in the container.
+      - "apparmor=unconfined"
+
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+      target: runner
+    ports:
+      - 8000:8000
+

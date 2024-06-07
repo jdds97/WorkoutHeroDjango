@@ -1,0 +1,20 @@
+meta {
+  name: Revison
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{BaseUrl}}/organisations/{{OrganisationID}}/topics/{{TopicID}}/revisions/{{RevisionID}}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{AccessToken}}
+}
+
+assert {
+  AccessToken: isDefined
+  res.status: eq 200
+}

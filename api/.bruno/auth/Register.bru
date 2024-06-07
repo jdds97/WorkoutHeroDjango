@@ -1,0 +1,32 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BaseUrl}}/auth/register/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "TEST_USER",
+    "password1": "complexpassword123",
+    "password2": "complexpassword123"
+  }
+}
+
+vars:post-response {
+  AccessToken: res.body.access
+  RefreshToken: res.body.refresh
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  My tests should fails since this user exists most of the time.
+}

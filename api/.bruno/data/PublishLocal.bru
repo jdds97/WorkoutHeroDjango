@@ -1,0 +1,26 @@
+meta {
+  name: PublishLocal
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{BaseUrl}}/organisations/{{OrganisationID}}/documents/{{DocumentID}}/maps/{{MapID}}/publish/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{AccessToken}}
+}
+
+body:json {
+  {
+    "formats": ["pdf", "html"]
+  }
+}
+
+assert {
+  AccessToken: isDefined
+  res.status: eq 202
+}

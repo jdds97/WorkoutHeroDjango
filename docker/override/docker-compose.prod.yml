@@ -1,0 +1,24 @@
+---
+
+services:
+  pifmaker-nginx:
+
+    networks:
+      - public
+
+  beeldpif-nginx:
+    volumes:
+      - beeldpif_data:/srv/beeldpif
+    networks:
+      - public
+
+  frontend:
+    image: "registry.gitlab.com/visualleaflet/pifmaker-ng/pifmaker-frontend:${PIFMAKER_FRONTEND_VERSION:-latest}"
+
+  api:
+    image: "registry.gitlab.com/visualleaflet/pifmaker-ng/pifmaker-api/api:${PIFMAKER_API_VERSION:-latest}"
+
+networks:
+  public:
+    name: nginx-proxy
+    external: true

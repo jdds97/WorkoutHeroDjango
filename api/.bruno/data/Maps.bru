@@ -1,0 +1,20 @@
+meta {
+  name: Maps
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{BaseUrl}}/organisations/{{OrganisationID}}/documents/{{DocumentID}}/maps/
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{AccessToken}}
+}
+
+assert {
+  AccessToken: isDefined
+  res.status: eq 200
+}
