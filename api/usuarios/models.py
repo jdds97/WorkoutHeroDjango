@@ -85,7 +85,11 @@ class Cliente(Usuario):
 class Perfil(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     nombre_completo = models.CharField(max_length=1000)
-    biografia = models.CharField(max_length=100)
+    biografia = models.CharField(
+        max_length=100, 
+        help_text="Descripción breve sobre ti, tus objetivos fitness y experiencia (máximo 100 caracteres)",
+        verbose_name="Sobre mí"
+    )
     imagen = models.ImageField(upload_to="imagenes_usuario", default="default.jpg")
     verificado = models.BooleanField(default=False)
     membresia= models.ForeignKey(
